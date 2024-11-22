@@ -92,6 +92,11 @@ public class PouzivatelService {
         if (emailExists) {
             throw new Exception("User with the given email already exists");
         }
+        // Check if person with the same rodneCislo already exists
+        Optional<Osoba> existingOsoba = osobaRepository.findByRodneCislo(request.getRodneCislo());
+        if (existingOsoba.isPresent()) {
+            throw new Exception("Person with the given rodne cislo already exists");
+        }
     }
 
     // **Get Používateľa podľa ID**
@@ -163,5 +168,9 @@ public class PouzivatelService {
         // Vymazanie samotného používateľa
         pouzivatelRepository.delete(pouzivatel);
     }
+    public Optional<Pouzivatel> getPouzivatelByEmail(String email) {
+        return pouzivatelRepository.findPouzivatelByEmail(email);
+    }
+
 
 }
