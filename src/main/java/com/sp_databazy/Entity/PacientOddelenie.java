@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -13,20 +12,23 @@ import java.util.UUID;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name = "TeplotnaTabulka")
-public class TeplotnaTabulka {
+@Table(name = "PacientOddelenie")
+public class PacientOddelenie {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "pacient_id", nullable = false)
-    private Pacient pacient;
+    @ManyToOne()
+    @JoinColumn(name = "pacient_id")
+    private Pacient pacientIdId;
+
+    @ManyToOne()
+    @JoinColumn(name = "oddelenie_id")
+    private Oddelenie oddelenieId;
 
     @Column
-    private BigDecimal teplota;
-    @Column
-    private LocalDateTime zaznamenanie;
+    private LocalDateTime datumPriradenia;
+
 
 }

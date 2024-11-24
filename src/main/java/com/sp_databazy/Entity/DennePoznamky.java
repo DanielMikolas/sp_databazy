@@ -27,6 +27,8 @@ public class DennePoznamky {
     @JoinColumn(name = "sestra_id")
     private Sestra sestra;
 
+    @Column
     private LocalDateTime datumCas;
+    @Column
     private String poznamka;
 }
