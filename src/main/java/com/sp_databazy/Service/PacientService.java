@@ -2,8 +2,10 @@ package com.sp_databazy.Service;
 
 import com.sp_databazy.Entity.Doktor;
 import com.sp_databazy.Entity.Pacient;
+import com.sp_databazy.Entity.Poistovna;
 import com.sp_databazy.Entity.Pouzivatel;
 import com.sp_databazy.Repository.PacientRepository;
+import com.sp_databazy.Repository.PoistovnaRepository;
 import com.sp_databazy.Repository.PouzivatelRepository;
 import com.sp_databazy.Request.UlozPacientaRequest;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +21,17 @@ public class PacientService {
 
     private final PacientRepository pacientRepository;
     private final PouzivatelRepository pouzivatelRepository;
+    private final PoistovnaRepository poistovnaRepository;
 
     // Vytvorenie pacienta
     public Pacient ulozPacienta(UlozPacientaRequest ulozPacientRequest) {
         Pacient pacient = new Pacient();
-        pacient.setCisloPoistovne(ulozPacientRequest.getCisloPoistovne());
-        pacient.setCisloPoistovne(ulozPacientRequest.getCisloPoistovne());
+        pacient.setCisloPoistenca(ulozPacientRequest.getCisloPoistenca());
+
+        // Načítanie poisťovne podľa jej ID
+        Poistovna poistovna = poistovnaRepository.findById(ulozPacientRequest.getCisloPoistovne())
+                .orElseThrow(() -> new NoSuchElementException("Poisťovňa s týmto kódom neexistuje"));
+        pacient.setPoistovna(poistovna);
 
         // Načítanie Pouzivatela podľa jeho ID
         Pouzivatel pouzivatel = pouzivatelRepository.findById(ulozPacientRequest.getPouzivatelId())
@@ -51,7 +58,6 @@ public class PacientService {
                 .orElseThrow(() -> new NoSuchElementException("Pacient s týmto ID neexistuje"));
 
         pacient.setCisloPoistenca(ulozPacientRequest.getCisloPoistenca());
-        pacient.setCisloPoistovne(ulozPacientRequest.getCisloPoistovne());
 
         return pacientRepository.save(pacient);
     }

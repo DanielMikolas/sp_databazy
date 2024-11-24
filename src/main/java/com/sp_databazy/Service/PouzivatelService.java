@@ -25,6 +25,7 @@ public class PouzivatelService {
     private final SestraRepository sestraRepository;
     private final OsobaRepository osobaRepository;
     private final PacientRepository pacientRepository;
+    private final PoistovnaRepository poistovnaRepository;
 
     public void ulozPouzivatela(UlozPouzivatelaRequest ulozPouzivatelaRequest){
         try {
@@ -48,8 +49,13 @@ public class PouzivatelService {
             if (pouzivatel.getRola() == Rola.PACIENT) {
                 Pacient pacient = new Pacient();
                 pacient.setCisloPoistenca(ulozPouzivatelaRequest.getCisloPoistenca());
-                pacient.setCisloPoistovne(ulozPouzivatelaRequest.getCisloPoistovne());
                 pacient.setPouzivatelId(pouzivatel);
+
+                // Načítanie Poistovne podľa cisla poisťovne
+                Poistovna poistovna = poistovnaRepository.findById(ulozPouzivatelaRequest.getCisloPoistovne())
+                        .orElseThrow(() -> new NoSuchElementException("Poisťovňa s týmto kódom neexistuje"));
+                pacient.setPoistovna(poistovna);
+
                 pacientRepository.save(pacient);
             } else if (pouzivatel.getRola() == Rola.DOKTOR) {
                 Doktor doktor = new Doktor();
@@ -126,7 +132,6 @@ public class PouzivatelService {
             Pacient pacient = pacientRepository.findByPouzivatelId(pouzivatel)
                     .orElseThrow(() -> new NoSuchElementException("Pacient s týmto používateľom neexistuje"));
             pacient.setCisloPoistenca(ulozPouzivatelaRequest.getCisloPoistenca());
-            pacient.setCisloPoistovne(ulozPouzivatelaRequest.getCisloPoistovne());
             pacientRepository.save(pacient);
         }
         // Ak je rola DOKTOR, upravíme údaje v tabuľke Doktor
