@@ -30,21 +30,13 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(a -> a
                         .requestMatchers("/auth/**").permitAll()
-                        //.requestMatchers("/pacOddelenie/zoznam").authenticated()// Povolené pre autentifikačné cesty
+                        .requestMatchers("/vysetrenie").authenticated()
                         .anyRequest().authenticated()           // Ostatné cesty vyžadujú prihlásenie
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
-//    // Bean for configuring HttpSecurity security filter chain
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-//        return httpSecurity.cors(AbstractHttpConfigurer::disable)
-//                .csrf(CsrfConfigurer::disable)
-//                .authorizeHttpRequests(a -> a.requestMatchers("/**").permitAll().anyRequest().permitAll())
-//                .build();
-//    }
 
     // Bean for PasswordEncoder
     @Bean
@@ -57,28 +49,5 @@ public class WebSecurityConfig {
         return http.getSharedObject(AuthenticationManagerBuilder.class).build();
     }
 
-//    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-//
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(csrf -> csrf.disable()) // Nové API na zakázanie CSRF
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/auth/**").permitAll() // Povoliť prístup pre /auth/** bez autentifikácie
-//                        .anyRequest().authenticated() // Všetky ostatné požiadavky musia byť autentifikované
-//                )
-//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-//
-//        return http.build();
-//    }
-//
-//    @Bean
-//    public AuthenticationManager authManager(AuthenticationConfiguration config) throws Exception {
-//        return config.getAuthenticationManager();
-//    }
-//
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
+
 }
