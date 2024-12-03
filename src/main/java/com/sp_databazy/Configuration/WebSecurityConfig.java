@@ -30,6 +30,7 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(a -> a
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/pouzivatel/uloz").permitAll()
                         .requestMatchers("/vysetrenie").authenticated()
                         .anyRequest().authenticated()           // Ostatné cesty vyžadujú prihlásenie
                 )

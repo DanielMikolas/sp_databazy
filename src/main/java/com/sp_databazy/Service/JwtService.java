@@ -1,5 +1,6 @@
 package com.sp_databazy.Service;
 
+import com.sp_databazy.Entity.Pouzivatel;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -28,20 +29,35 @@ public class JwtService {
     //private final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     // Generating the token
-    public String generateToken(String email) {
+//    public String generateToken(String email) {
+////        Map<String, Object> claims = new HashMap<>();
+////        return createToken(claims, email);
 //        Map<String, Object> claims = new HashMap<>();
-//        return createToken(claims, email);
+//        return Jwts.builder()
+//                .setClaims(claims)
+//                .setSubject(email)
+//                .setIssuedAt(new Date(System.currentTimeMillis()))
+//                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hodín
+//                .signWith(SECRET_KEY, SignatureAlgorithm.HS256) // Používaj rovnaký kľúč
+//                .compact();
+//
+//
+//    }
+
+    public String generateToken(Pouzivatel pouzivatel) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", pouzivatel.getId());
+        claims.put("email", pouzivatel.getEmail());
+
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(email)
+                .setSubject(pouzivatel.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hodín
-                .signWith(SECRET_KEY, SignatureAlgorithm.HS256) // Používaj rovnaký kľúč
+                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
                 .compact();
-
-
     }
+
 
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
@@ -63,9 +79,9 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
+//    public String extractEmail(String token) {
+//        return extractClaim(token, Claims::getSubject);
+//    }
 
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
@@ -74,6 +90,14 @@ public class JwtService {
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
+    }
+
+    public String extractEmail(String token) {
+        return extractAllClaims(token).getSubject();
+    }
+
+    public Long extractUserId(String token) {
+        return extractAllClaims(token).get("userId", Long.class);
     }
 
     private Claims extractAllClaims(String token) {

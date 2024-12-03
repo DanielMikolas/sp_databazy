@@ -77,6 +77,8 @@ public class PouzivatelService {
 
     }
 
+
+
     // Pomocná metóda na vytvorenie novej osoby
     private Osoba vytvorNovuOsobu(UlozPouzivatelaRequest ulozPouzivatelaRequest) {
         Osoba novaOsoba = new Osoba();

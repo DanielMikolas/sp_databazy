@@ -1,7 +1,9 @@
 package com.sp_databazy.Controller;
 
+import com.sp_databazy.Entity.Pouzivatel;
 import com.sp_databazy.Request.LoginRequest;
 import com.sp_databazy.Service.JwtService;
+import com.sp_databazy.Service.PouzivatelService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,37 +25,106 @@ public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final PouzivatelService pouzivatelService;
 
+
+//    @PostMapping("/login")
+//    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+//
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getHeslo())
+//        );
+//
+//        if (authentication.isAuthenticated()) {
+//            String token = jwtService.generateToken(loginRequest.getEmail());
+//
+//            ResponseCookie jwtCookie = ResponseCookie.from("jwt", token)
+//                    .httpOnly(true)  // Cookie je prístupné len zo servera
+//                    .secure(true)    // Používaj HTTPS
+//                    .path("/")       // Cesta, kde je cookie platná
+//                    .maxAge(60 * 60 * 10) // Expirácia tokenu: 10 hodín
+//                    .build();
+//
+//            response.addHeader("Set-Cookie", jwtCookie.toString());
+//
+//            return ResponseEntity.ok("Login successful");
+//        } else {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+//        }
+//
+//
+//    }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getHeslo())
         );
 
         if (authentication.isAuthenticated()) {
-            String token = jwtService.generateToken(loginRequest.getEmail());
+//            // Predpokladáme, že používateľské údaje sú získané cez JwtService
+//            String token = jwtService.generateToken(loginRequest.getEmail());
+//
+//            // Tu musíte extrahovať údaje o používateľovi z emailu alebo zo systému
+//            String userEmail = loginRequest.getEmail();
+//            Long userId = jwtService.extractUserId(token); // Extrakcia userId z tokenu
+//            String role = jwtService.extractRole(token);  // Extrakcia role z tokenu
 
+            // Získanie Pouzivatel objektu cez váš servis
+            Pouzivatel pouzivatel = pouzivatelService.getPouzivatelByEmail(loginRequest.getEmail())
+                    .orElseThrow(() -> new RuntimeException("Používateľ neexistuje"));
+
+            // Generovanie tokenu s detailmi Pouzivatel
+            String token = jwtService.generateToken(pouzivatel);
+
+            // Nastavenie JWT ako HTTP-only cookie
             ResponseCookie jwtCookie = ResponseCookie.from("jwt", token)
-                    .httpOnly(true)  // Cookie je prístupné len zo servera
-                    .secure(true)    // Používaj HTTPS
-                    .path("/")       // Cesta, kde je cookie platná
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
                     .maxAge(60 * 60 * 10) // Expirácia tokenu: 10 hodín
                     .build();
 
             response.addHeader("Set-Cookie", jwtCookie.toString());
 
-            return ResponseEntity.ok("Login successful");
+            // Odpoveď obsahujúca token aj informácie o používateľovi
+            Map<String, Object> responseBody = Map.of(
+                    "message", "Login successful",
+                    "token", token,
+                    "user", Map.of(
+                            "id", pouzivatel.getId(),
+                            "email", pouzivatel.getEmail()
+                    )
+            );
+
+            return ResponseEntity.ok(responseBody);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid credentials"));
         }
-
-
     }
 
+
+//    @GetMapping("/validate")
+//    public ResponseEntity<Map<String, String>> validateToken(HttpServletRequest request) {
+//        String token = null;
+//        if (request.getCookies() != null) {
+//            for (Cookie cookie : request.getCookies()) {
+//                if ("jwt".equals(cookie.getName())) {
+//                    token = cookie.getValue();
+//                }
+//            }
+//        }
+//
+//        if (token != null && jwtService.validateToken(token, jwtService.extractEmail(token))) {
+//            return ResponseEntity.ok(Map.of("status", "authenticated"));
+//        }
+//
+//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "unauthenticated"));
+//    }
+
     @GetMapping("/validate")
-    public ResponseEntity<Map<String, String>> validateToken(HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> validateToken(HttpServletRequest request) {
         String token = null;
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
@@ -64,11 +135,21 @@ public class AuthenticationController {
         }
 
         if (token != null && jwtService.validateToken(token, jwtService.extractEmail(token))) {
-            return ResponseEntity.ok(Map.of("status", "authenticated"));
+            Long userId = jwtService.extractUserId(token);
+            String userEmail = jwtService.extractEmail(token);
+
+            return ResponseEntity.ok(Map.of(
+                    "status", "authenticated",
+                    "user", Map.of(
+                            "id", userId,
+                            "email", userEmail
+                    )
+            ));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "unauthenticated"));
     }
+
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletResponse response) {
