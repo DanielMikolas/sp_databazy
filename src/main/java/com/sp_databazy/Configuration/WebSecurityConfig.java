@@ -32,6 +32,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/pouzivatel/uloz").permitAll()
                         .requestMatchers("/vysetrenie").authenticated()
+                        .requestMatchers("/lieky").authenticated()
                         .anyRequest().authenticated()           // Ostatné cesty vyžadujú prihlásenie
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
