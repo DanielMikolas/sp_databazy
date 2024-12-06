@@ -31,8 +31,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(a -> a
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/pouzivatel/uloz").permitAll()
-                        .requestMatchers("/vysetrenie").authenticated()
-                        .requestMatchers("/preskripcia").authenticated()
+                        .requestMatchers("/prijem").authenticated()
+                        .requestMatchers("/dokumentacia").authenticated()
                         .anyRequest().authenticated()           // Ostatné cesty vyžadujú prihlásenie
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
