@@ -28,32 +28,6 @@ public class AuthenticationController {
     private final PouzivatelService pouzivatelService;
 
 
-//    @PostMapping("/login")
-//    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-//
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getHeslo())
-//        );
-//
-//        if (authentication.isAuthenticated()) {
-//            String token = jwtService.generateToken(loginRequest.getEmail());
-//
-//            ResponseCookie jwtCookie = ResponseCookie.from("jwt", token)
-//                    .httpOnly(true)  // Cookie je prístupné len zo servera
-//                    .secure(true)    // Používaj HTTPS
-//                    .path("/")       // Cesta, kde je cookie platná
-//                    .maxAge(60 * 60 * 10) // Expirácia tokenu: 10 hodín
-//                    .build();
-//
-//            response.addHeader("Set-Cookie", jwtCookie.toString());
-//
-//            return ResponseEntity.ok("Login successful");
-//        } else {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-//        }
-//
-//
-//    }
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
@@ -63,13 +37,7 @@ public class AuthenticationController {
         );
 
         if (authentication.isAuthenticated()) {
-//            // Predpokladáme, že používateľské údaje sú získané cez JwtService
-//            String token = jwtService.generateToken(loginRequest.getEmail());
-//
-//            // Tu musíte extrahovať údaje o používateľovi z emailu alebo zo systému
-//            String userEmail = loginRequest.getEmail();
-//            Long userId = jwtService.extractUserId(token); // Extrakcia userId z tokenu
-//            String role = jwtService.extractRole(token);  // Extrakcia role z tokenu
+
 
             // Získanie Pouzivatel objektu cez váš servis
             Pouzivatel pouzivatel = pouzivatelService.getPouzivatelByEmail(loginRequest.getEmail())
@@ -104,24 +72,6 @@ public class AuthenticationController {
         }
     }
 
-
-//    @GetMapping("/validate")
-//    public ResponseEntity<Map<String, String>> validateToken(HttpServletRequest request) {
-//        String token = null;
-//        if (request.getCookies() != null) {
-//            for (Cookie cookie : request.getCookies()) {
-//                if ("jwt".equals(cookie.getName())) {
-//                    token = cookie.getValue();
-//                }
-//            }
-//        }
-//
-//        if (token != null && jwtService.validateToken(token, jwtService.extractEmail(token))) {
-//            return ResponseEntity.ok(Map.of("status", "authenticated"));
-//        }
-//
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "unauthenticated"));
-//    }
 
     @GetMapping("/validate")
     public ResponseEntity<Map<String, Object>> validateToken(HttpServletRequest request) {

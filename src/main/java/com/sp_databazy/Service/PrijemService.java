@@ -39,6 +39,10 @@ public class PrijemService {
 
         // Vytvorenie objektu Prijem
         Prijem prijem = new Prijem();
+        return setPacient(request, pacient, diagnoza, osetrujuciLekar, oddelenie, prijemSestra, prijem);
+    }
+
+    private Prijem setPacient(UlozPrijemRequest request, Pacient pacient, Diagnoza diagnoza, Doktor osetrujuciLekar, Oddelenie oddelenie, Sestra prijemSestra, Prijem prijem) {
         prijem.setPacientId(pacient);
         prijem.setDatumPrijmu(request.getDatumPrijmu());
         prijem.setDovodPrijmu(request.getDovodPrijmu());
@@ -99,19 +103,7 @@ public class PrijemService {
                 .orElseThrow(() -> new IllegalArgumentException("Sestra not found"));
 
         // Aktualizácia objektu Prijem
-        prijem.setPacientId(pacient);
-        prijem.setDatumPrijmu(request.getDatumPrijmu());
-        prijem.setDovodPrijmu(request.getDovodPrijmu());
-        prijem.setDiagnoza(diagnoza);
-        prijem.setStavPriPrijme(request.getStavPriPrijme());
-        prijem.setOsetrujuciLekarId(osetrujuciLekar);
-        prijem.setOddelenieId(oddelenie);
-        prijem.setPrijemSestraId(prijemSestra);
-        prijem.setZaznamOPrijme(request.getZaznamOPrijme());
-        prijem.setPoznamky(request.getPoznamky());
-        prijem.setOsVeciPac(request.getOsVeciPac());
-
-        return prijemRepository.save(prijem);
+        return setPacient(request, pacient, diagnoza, osetrujuciLekar, oddelenie, prijemSestra, prijem);
     }
 
     public void vymazPrijem(UUID id) {
