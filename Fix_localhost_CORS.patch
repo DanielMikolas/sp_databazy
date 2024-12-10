@@ -1,0 +1,38 @@
+Subject: [PATCH] Fix localhost CORS
+---
+Index: src/main/java/com/sp_databazy/Controller/AuthenticationController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/sp_databazy/Controller/AuthenticationController.java b/src/main/java/com/sp_databazy/Controller/AuthenticationController.java
+--- a/src/main/java/com/sp_databazy/Controller/AuthenticationController.java	(revision 25b1b23353b7ffd36f07b9cc4176316192ff5c18)
++++ b/src/main/java/com/sp_databazy/Controller/AuthenticationController.java	(date 1733851144106)
+@@ -55,6 +55,7 @@
+ //
+ //    }
+ 
++    @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+     @PostMapping("/login")
+     public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+ 
+Index: src/main/java/com/sp_databazy/Configuration/WebConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/sp_databazy/Configuration/WebConfig.java b/src/main/java/com/sp_databazy/Configuration/WebConfig.java
+--- a/src/main/java/com/sp_databazy/Configuration/WebConfig.java	(revision 25b1b23353b7ffd36f07b9cc4176316192ff5c18)
++++ b/src/main/java/com/sp_databazy/Configuration/WebConfig.java	(date 1733851144114)
+@@ -11,6 +11,10 @@
+ 
+     @Override
+     public void addCorsMappings(CorsRegistry registry) {
+-        registry.addMapping("/**").allowedMethods("*").allowedOrigins("*");
++        registry.addMapping("/**")
++                .allowedMethods("PUT", "DELETE", "GET", "POST", "OPTIONS")
++                .allowedOrigins("http://localhost:5173")
++                .allowedHeaders("*")
++                .allowCredentials(true);
+     }
+ }
