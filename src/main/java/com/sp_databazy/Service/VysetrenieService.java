@@ -9,10 +9,20 @@ import com.sp_databazy.Repository.VysetrenieRepository;
 import com.sp_databazy.Request.UlozVysetrenieRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -91,4 +101,43 @@ public class VysetrenieService {
         }
         vysetrenieRepository.deleteById(id);
     }
+
+
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public ResponseEntity<byte[]> stiahnutPrilohu(UUID idVysetrenie) throws IOException {
+        Optional<Vysetrenie> priloha = vysetrenieRepository.findById(idVysetrenie);
+
+        if (priloha.isPresent()) {
+            File file = new File(priloha.get().getNazov());
+            byte[] content = Files.readAllBytes(file.toPath());
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", file.getName());
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(content);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    public String saveLargeObject(MultipartFile file) throws IOException {
+        File uploadDir = new File("uploads");
+        if (!uploadDir.exists()) {
+            uploadDir.mkdir();
+        }
+
+        File subor = new File(uploadDir.getAbsolutePath() + File.separator + file.getOriginalFilename());
+        FileOutputStream fos = new FileOutputStream(subor);
+        fos.write(file.getBytes());
+        fos.close();
+
+        return subor.getAbsolutePath();
+
+    }
+
+
 }

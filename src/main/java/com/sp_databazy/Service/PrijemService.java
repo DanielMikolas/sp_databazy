@@ -39,10 +39,10 @@ public class PrijemService {
 
         // Vytvorenie objektu Prijem
         Prijem prijem = new Prijem();
-        return setPacient(request, pacient, diagnoza, osetrujuciLekar, oddelenie, prijemSestra, prijem);
+        return setPrijem(request, pacient, diagnoza, osetrujuciLekar, oddelenie, prijemSestra, prijem);
     }
 
-    private Prijem setPacient(UlozPrijemRequest request, Pacient pacient, Diagnoza diagnoza, Doktor osetrujuciLekar, Oddelenie oddelenie, Sestra prijemSestra, Prijem prijem) {
+    private Prijem setPrijem(UlozPrijemRequest request, Pacient pacient, Diagnoza diagnoza, Doktor osetrujuciLekar, Oddelenie oddelenie, Sestra prijemSestra, Prijem prijem) {
         prijem.setPacientId(pacient);
         prijem.setDatumPrijmu(request.getDatumPrijmu());
         prijem.setDovodPrijmu(request.getDovodPrijmu());
@@ -103,7 +103,7 @@ public class PrijemService {
                 .orElseThrow(() -> new IllegalArgumentException("Sestra not found"));
 
         // Aktualizácia objektu Prijem
-        return setPacient(request, pacient, diagnoza, osetrujuciLekar, oddelenie, prijemSestra, prijem);
+        return setPrijem(request, pacient, diagnoza, osetrujuciLekar, oddelenie, prijemSestra, prijem);
     }
 
     public void vymazPrijem(UUID id) {

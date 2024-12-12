@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -36,6 +37,13 @@ public class Vysetrenie {
     @Lob //oznacuje ze ide o binarne data
     @Column
     private byte[] priloha;
+
+    @Basic
+    @Column
+    private String nazov;
+
+    @Column
+    private LocalDate datum_nahratia;
 
     @Column
     private LocalDateTime datumVysetrenia;

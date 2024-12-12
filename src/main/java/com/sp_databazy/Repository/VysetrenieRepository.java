@@ -12,4 +12,6 @@ import java.util.UUID;
 public interface VysetrenieRepository extends JpaRepository<Vysetrenie, UUID> {
 
     List<Vysetrenie> findByPacient(Pacient pacient);
+
+
 }
